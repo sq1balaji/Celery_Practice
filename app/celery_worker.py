@@ -1,18 +1,11 @@
 from celery import Celery
-from app.config import BROKER_URL, BACKEND_URL
+import os
+import app.tasks.github_checker
 
-celery_app = Celery(
-    "worker",
-    broker=BROKER_URL,
-    backend=BACKEND_URL,
-    include=["app.tasks.github_checker"]
-)
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
 
-celery_app.conf.beat_schedule = {
-    "check-github-commits-every-minute": {
-        "task": "app.tasks.github_checker.check_for_new_commit",
-        "schedule": 60.0,
-    },
-}
+celery_app = Celery("app", broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
 
-celery_app.conf.timezone = "UTC"
+# Automatically discover tasks in 'app' directory
+celery_app.autodiscover_tasks(['app'])
