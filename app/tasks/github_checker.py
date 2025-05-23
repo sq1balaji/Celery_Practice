@@ -4,7 +4,7 @@ from celery import shared_task
 from app.celery_worker import celery_app
 from app.config import GITHUB_REPO_OWNER, GITHUB_REPO_NAME, GITHUB_TOKEN
 
-# LAST_COMMIT_FILE = "/tmp/last_commit.txt"
+LAST_COMMIT_FILE = "/tmp/last_commit.txt"
 
 # @celery_app.task
 # def check_for_new_commit():
